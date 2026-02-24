@@ -1,12 +1,14 @@
 buildscript {
     ext.kotlin_version = "1.8.22"
+
     repositories {
         google()
         mavenCentral()
-
+        maven { url uri("https://mvn.0110.be/releases") } // TarsosDSP repo
     }
+
     dependencies {
-        classpath "com.android.tools.build:gradle:8.1.1"
+        classpath "com.android.tools.build:gradle:8.9.1"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -15,7 +17,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven {url uri("https://mvn.0110.be/releases") } // TarsosDSP repo
+        maven { url uri("https://mvn.0110.be/releases") }
     }
 }
 
