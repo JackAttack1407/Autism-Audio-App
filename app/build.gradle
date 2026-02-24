@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    namespace 'com.example.autismaudioapp'
+    namespace 'com.example.autismaudioapp'  // matches your package
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.autismaudioapp"
-        minSdk 24
+        applicationId "com.example.autismaudioapp"  // lowercase, matches namespace
+        minSdk 26
         targetSdk 34
         versionCode 1
         versionName "1.0"
@@ -33,14 +33,8 @@ android {
 }
 
 dependencies {
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:2.3.10'
-
-    // TarsosDSP for audio analysis
-    implementation 'be.tarsos.dsp:core:2.5'
-    //implementation 'be.tarsos.dsp:jvm:2.4' optional, if you need JVM utilities
-
     // AndroidX essentials
-    implementation 'androidx.core:core-ktx:1.17.0'
+    implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation 'com.google.android.material:material:1.13.0'
 }

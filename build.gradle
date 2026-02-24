@@ -1,12 +1,12 @@
+// Top-level build file
 buildscript {
     ext.kotlin_version = "1.8.22"
     repositories {
         google()
         mavenCentral()
-
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.1.1"
+        classpath "com.android.tools.build:gradle:8.5.2"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -15,10 +15,9 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven {url uri("https://mvn.0110.be/releases") } // TarsosDSP repo
     }
 }
 
-task clean(type: Delete) {
+tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
