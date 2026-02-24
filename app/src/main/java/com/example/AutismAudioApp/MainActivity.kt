@@ -1,19 +1,21 @@
+package com.example.autismaudioapp
+
 import android.Manifest
 import android.content.pm.PackageManager
+import android.media.AudioFormat
+import android.media.AudioRecord
+import android.media.MediaRecorder
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import be.tarsos.dsp.AudioDispatcher
-import be.tarsos.dsp.io.android.AudioDispatcherFactory
-import be.tarsos.dsp.AudioEvent
-import be.tarsos.dsp.AudioProcessor
 import kotlin.math.log10
+import kotlin.math.sqrt
 
-class `MainActivity.kt` : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var meterText: TextView
-    private var dispatcher: AudioDispatcher? = null
+    private var isRecording = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,10 +23,12 @@ class `MainActivity.kt` : AppCompatActivity() {
 
         meterText = findViewById(R.id.meterText)
 
-        // Request mic permission
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-            != PackageManager.PERMISSION_GRANTED) {
-
+        // Request microphone permission
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.RECORD_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.RECORD_AUDIO),
@@ -36,35 +40,49 @@ class `MainActivity.kt` : AppCompatActivity() {
     }
 
     private fun startAudio() {
-
         val sampleRate = 44100
-        val bufferSize = 1024
-
-        // Create dispatcher using AudioRecord internally
-        dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(
+        val bufferSize = AudioRecord.getMinBufferSize(
             sampleRate,
-            bufferSize,
-            0
+            AudioFormat.CHANNEL_IN_MONO,
+            AudioFormat.ENCODING_PCM_16BIT
         )
 
-        val processor = object : AudioProcessor {
-            override fun process(audioEvent: AudioEvent): Boolean {
+        val audioRecord = AudioRecord(
+            MediaRecorder.AudioSource.MIC,
+            sampleRate,
+            AudioFormat.CHANNEL_IN_MONO,
+            AudioFormat.ENCODING_PCM_16BIT,
+            bufferSize
+        )
 
-                val rms = audioEvent.rms
-                val db = 20 * log10(rms.toDouble())
+        isRecording = true
+        audioRecord.startRecording()
 
-                runOnUiThread {
-                    meterText.text = "Volume: %.2f dB".format(db)
+        Thread {
+            val buffer = ShortArray(bufferSize)
+            while (isRecording) {
+                val read = audioRecord.read(buffer, 0, buffer.size)
+                if (read > 0) {
+                    // Compute RMS
+                    var sum = 0.0
+                    for (i in 0 until read) {
+                        sum += buffer[i] * buffer[i]
+                    }
+                    val rms = sqrt(sum / read)
+                    val db = 20 * log10(rms / 32768.0 + 1e-6) // Avoid log(0)
+
+                    runOnUiThread {
+                        meterText.text = "Volume: %.2f dB".format(db)
+                    }
                 }
-
-                return true
             }
+            audioRecord.stop()
+            audioRecord.release()
+        }.start()
+    }
 
-            override fun processingFinished() {}
-        }
-
-        dispatcher?.addAudioProcessor(processor)
-
-        Thread(dispatcher, "Audio Dispatcher").start()
+    override fun onDestroy() {
+        super.onDestroy()
+        isRecording = false
     }
 }
