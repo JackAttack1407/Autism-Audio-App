@@ -24,9 +24,6 @@ Thumbs.db
 *.class
 *.jar
 
-# Gradle wrapper
-gradle/wrapper/gradle-wrapper.properties
-
 # APK/outputs
 *.apk
 *.ap_
