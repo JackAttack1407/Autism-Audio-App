@@ -41,19 +41,26 @@ class MainActivity : AppCompatActivity() {
 
     private fun startAudio() {
         val sampleRate = 44100
+
         val bufferSize = AudioRecord.getMinBufferSize(
             sampleRate,
             AudioFormat.CHANNEL_IN_MONO,
             AudioFormat.ENCODING_PCM_16BIT
-        )
+        ).coerceAtLeast(2048)
 
         val audioRecord = AudioRecord(
-            MediaRecorder.AudioSource.MIC,
+            MediaRecorder.AudioSource.VOICE_RECOGNITION, // better mic capture
             sampleRate,
             AudioFormat.CHANNEL_IN_MONO,
             AudioFormat.ENCODING_PCM_16BIT,
             bufferSize
         )
+
+        // Check if AudioRecord initialized correctly
+        if (audioRecord.state != AudioRecord.STATE_INITIALIZED) {
+            meterText.text = "AudioRecord init failed!"
+            return
+        }
 
         isRecording = true
         audioRecord.startRecording()
@@ -63,13 +70,18 @@ class MainActivity : AppCompatActivity() {
             while (isRecording) {
                 val read = audioRecord.read(buffer, 0, buffer.size)
                 if (read > 0) {
-                    // Compute RMS
+                    // Print first 10 samples for debugging
+                    val firstSamples = buffer.take(10).joinToString()
+                    println("First 10 samples: $firstSamples")
+
+                    // Compute RMS and dB
                     var sum = 0.0
                     for (i in 0 until read) {
                         sum += buffer[i] * buffer[i]
                     }
                     val rms = sqrt(sum / read)
-                    val db = 20 * log10(rms / 32768.0 + 1e-6) // Avoid log(0)
+                    val normalized = rms / 32768.0
+                    val db = if (normalized > 0) 20 * log10(normalized) else -90.0
 
                     runOnUiThread {
                         meterText.text = "Volume: %.2f dB".format(db)
@@ -86,3 +98,4 @@ class MainActivity : AppCompatActivity() {
         isRecording = false
     }
 }
+
