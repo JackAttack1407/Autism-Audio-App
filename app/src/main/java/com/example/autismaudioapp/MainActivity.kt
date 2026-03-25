@@ -39,9 +39,29 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            startAudio()
+        } else {
+            meterText.text = getString(R.string.audio_permission_denied)
+        }
+    }
+
     private fun startAudio() {
+        // Check microphone permission
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            meterText.text = getString(R.string.audio_permission_denied)
+            return
+        }
+
         val sampleRate = 44100
 
+        // Minimum buffer size
         val bufferSize = AudioRecord.getMinBufferSize(
             sampleRate,
             AudioFormat.CHANNEL_IN_MONO,
@@ -49,53 +69,59 @@ class MainActivity : AppCompatActivity() {
         ).coerceAtLeast(2048)
 
         val audioRecord = AudioRecord(
-            MediaRecorder.AudioSource.VOICE_RECOGNITION, // better mic capture
+            MediaRecorder.AudioSource.MIC, // Use raw mic input
             sampleRate,
             AudioFormat.CHANNEL_IN_MONO,
             AudioFormat.ENCODING_PCM_16BIT,
             bufferSize
         )
 
-        // Check if AudioRecord initialized correctly
+        // Ensure AudioRecord initialized correctly
         if (audioRecord.state != AudioRecord.STATE_INITIALIZED) {
-            meterText.text = "AudioRecord init failed!"
+            meterText.text = getString(R.string.audio_init_failed)
             return
         }
 
         isRecording = true
-        audioRecord.startRecording()
+
+        try {
+            audioRecord.startRecording()
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+            meterText.text = getString(R.string.audio_permission_denied)
+            return
+        }
 
         Thread {
             val buffer = ShortArray(bufferSize)
             while (isRecording) {
                 val read = audioRecord.read(buffer, 0, buffer.size)
-                if (read > 0) {
-                    // Print first 10 samples for debugging
-                    val firstSamples = buffer.take(10).joinToString()
-                    println("First 10 samples: $firstSamples")
 
-                    // Compute RMS and dB
-                    var sum = 0.0
-                    for (i in 0 until read) {
-                        sum += buffer[i] * buffer[i]
-                    }
+                if (read > 0) {
+                    // Compute RMS
+                    val sum = buffer.take(read).sumOf { it.toDouble() * it }
                     val rms = sqrt(sum / read)
+
+                    // Normalize and convert to dB
                     val normalized = rms / 32768.0
                     val db = if (normalized > 0) 20 * log10(normalized) else -90.0
 
                     runOnUiThread {
-                        meterText.text = "Volume: %.2f dB".format(db)
+                        meterText.text = getString(R.string.volume_db, db)
                     }
                 }
             }
+
             audioRecord.stop()
             audioRecord.release()
         }.start()
+        //rms is the pitch of the audio wave, db is the human friendly scale
+        //outputs the number based on what's in the size of the buffer (50ms)
     }
-
     override fun onDestroy() {
         super.onDestroy()
         isRecording = false
+        //if not having audio input for a bit, will just stop the loop
+
     }
 }
-
