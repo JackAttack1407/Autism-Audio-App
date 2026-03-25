@@ -6,8 +6,9 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.5.2"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.android.tools.build:gradle:8.13.2"
+        // Maven central repo doesn’t have the stable 9.x release yet so warning is wrong
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.0"
     }
 }
 
@@ -19,5 +20,5 @@ allprojects {
 }
 
 tasks.register("clean", Delete) {
-    delete rootProject.buildDir
+    delete rootProject.layout.buildDirectory
 }
