@@ -6,6 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.example.autismaudioapp.AudioLevelView
+        android:id="@+id/levelView"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="16dp" />
+
     <TextView
         android:id="@+id/meterText"
         android:layout_width="wrap_content"
@@ -13,5 +19,10 @@
         android:text="@string/volume_db"
         android:textSize="28sp" />
     <!--complains about hard coded text SOMETIMES, doesn't matter as it immediately gets written over -->
+    <Button
+        android:id="@+id/btnToggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start" />
 
 </LinearLayout>

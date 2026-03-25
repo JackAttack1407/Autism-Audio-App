@@ -3,4 +3,6 @@
     <string name="volume_db">Volume: %.2f dB</string>
     <string name="audio_init_failed">AudioRecord init failed!</string>
     <string name="audio_permission_denied">Microphone permission denied!</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
 </resources>
