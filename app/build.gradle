@@ -5,14 +5,14 @@ plugins {
 
 android {
     namespace 'com.example.autismaudioapp'  // matches your package
-    compileSdk 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId "com.example.autismaudioapp"  // lowercase, matches namespace
-        minSdk 26
-        targetSdk 34
-        versionCode 1
-        versionName "1.0"
+        minSdk = 26
+        targetSdk = 36
+        versionCode = 1
+        versionName = "1.0"
     }
 
     buildTypes {
@@ -34,7 +34,7 @@ android {
 
 dependencies {
     // AndroidX essentials
-    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.core:core-ktx:1.18.0'
     implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation 'com.google.android.material:material:1.13.0'
 }

@@ -8,9 +8,10 @@
 
     <TextView
         android:id="@+id/meterText"
-        android:text="Volume: 0 dB"
-        android:textSize="28sp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:text="@string/volume_db"
+        android:textSize="28sp" />
+    <!--complains about hard coded text SOMETIMES, doesn't matter as it immediately gets written over -->
 
 </LinearLayout>
