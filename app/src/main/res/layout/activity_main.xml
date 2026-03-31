@@ -57,5 +57,9 @@
             android:layout_height="wrap_content"
             android:text="@string/stop"/>
     </LinearLayout>
-
+    <Button
+        android:id="@+id/btnChoose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Choose File" />
 </LinearLayout>

@@ -7,11 +7,12 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.media.AudioFormat
 import android.media.AudioRecord
-import android.media.MediaRecorder
 import android.media.MediaPlayer
+import android.media.MediaRecorder
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import kotlin.math.log10
@@ -25,11 +26,22 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnPlay: Button // Play button
     private lateinit var btnPause: Button // Pause button
     private lateinit var btnStop: Button // Stop button
+    private lateinit var btnChoose: Button // Choose file button
     private var isRecording = false
 
     private var audioThread: Thread? = null // Thread for audio loop
-
     private var mediaPlayer: MediaPlayer? = null // MediaPlayer for audio playback
+
+    // File picker for selecting audio from device storage
+    private val pickAudio = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let {
+            mediaPlayer?.release()
+            mediaPlayer = MediaPlayer().apply {
+                setDataSource(this@MainActivity, it)
+                prepare()
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +53,7 @@ class MainActivity : AppCompatActivity() {
         btnPlay = findViewById(R.id.btnPlay) // initialize Play button
         btnPause = findViewById(R.id.btnPause) // initialize Pause button
         btnStop = findViewById(R.id.btnStop) // initialize Stop button
+        btnChoose = findViewById(R.id.btnChoose) // initialize Choose file button
 
         // Request microphone permission
         if (ActivityCompat.checkSelfPermission(
@@ -67,8 +80,8 @@ class MainActivity : AppCompatActivity() {
         // Initialize button text safely
         toggleButton.text = getString(R.string.start)
 
-        // Initialize MediaPlayer
-        mediaPlayer = MediaPlayer.create(this, R.raw.test) // usest the res/raw/test.mp3 currently
+        // Initialize MediaPlayer with default res/raw/test.mp3
+        mediaPlayer = MediaPlayer.create(this, R.raw.test) // uses the res/raw/test.mp3 currently
 
         // Play button
         btnPlay.setOnClickListener {
@@ -87,7 +100,12 @@ class MainActivity : AppCompatActivity() {
             mediaPlayer?.stop()
             mediaPlayer?.release()
             mediaPlayer = MediaPlayer.create(this, R.raw.test) // recreate so it can play again
-        }                                                       // usest the res/raw/test.mp3 currently
+        }                                                       // uses the res/raw/test.mp3 currently
+
+        // Choose file button
+        btnChoose.setOnClickListener {
+            pickAudio.launch("audio/*") // opens system file picker for any audio
+        }
     }
 
     override fun onRequestPermissionsResult(
