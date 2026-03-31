@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
@@ -21,9 +22,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var meterText: TextView // DB output level box thing
     private lateinit var levelView: AudioLevelView // AudioLevelView reference for graph thing
     private lateinit var toggleButton: Button // Start/Stop button
+    private lateinit var btnPlay: Button // Play button
+    private lateinit var btnPause: Button // Pause button
+    private lateinit var btnStop: Button // Stop button
     private var isRecording = false
 
     private var audioThread: Thread? = null // Thread for audio loop
+
+    private var mediaPlayer: MediaPlayer? = null // MediaPlayer for audio playback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +38,9 @@ class MainActivity : AppCompatActivity() {
         meterText = findViewById(R.id.meterText)  // initialize text output of decibels
         levelView = findViewById(R.id.levelView)  // initialize AudioLevelView
         toggleButton = findViewById(R.id.btnToggle) // initialize Start/Stop button
+        btnPlay = findViewById(R.id.btnPlay) // initialize Play button
+        btnPause = findViewById(R.id.btnPause) // initialize Pause button
+        btnStop = findViewById(R.id.btnStop) // initialize Stop button
 
         // Request microphone permission
         if (ActivityCompat.checkSelfPermission(
@@ -57,6 +66,28 @@ class MainActivity : AppCompatActivity() {
 
         // Initialize button text safely
         toggleButton.text = getString(R.string.start)
+
+        // Initialize MediaPlayer
+        mediaPlayer = MediaPlayer.create(this, R.raw.test) // usest the res/raw/test.mp3 currently
+
+        // Play button
+        btnPlay.setOnClickListener {
+            mediaPlayer?.start()
+        }
+
+        // Pause button
+        btnPause.setOnClickListener {
+            if (mediaPlayer?.isPlaying == true) {
+                mediaPlayer?.pause()
+            }
+        }
+
+        // Stop button
+        btnStop.setOnClickListener {
+            mediaPlayer?.stop()
+            mediaPlayer?.release()
+            mediaPlayer = MediaPlayer.create(this, R.raw.test) // recreate so it can play again
+        }                                                       // usest the res/raw/test.mp3 currently
     }
 
     override fun onRequestPermissionsResult(
@@ -176,6 +207,7 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         stopAudio()
+        mediaPlayer?.release()
         // Ensures recording stops when the app is closed
     }
 }

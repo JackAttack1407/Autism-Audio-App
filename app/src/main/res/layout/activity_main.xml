@@ -4,25 +4,58 @@
     android:orientation="vertical"
     android:gravity="center"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
-    <com.example.autismaudioapp.AudioLevelView
-        android:id="@+id/levelView"
-        android:layout_width="300dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="16dp" />
-
+    <!-- dB Text -->
     <TextView
         android:id="@+id/meterText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/volume_db"
-        android:textSize="28sp" />
-    <!--complains about hard coded text SOMETIMES, doesn't matter as it immediately gets written over -->
+        android:textSize="28sp"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Audio Level Graph -->
+    <com.example.autismaudioapp.AudioLevelView
+        android:id="@+id/levelView"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Start / Stop Recording -->
     <Button
         android:id="@+id/btnToggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start" />
+        android:text="@string/start"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- Audio Player Controls -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnPlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/play"
+            android:layout_marginEnd="8dp"/>
+
+        <Button
+            android:id="@+id/btnPause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/pause"
+            android:layout_marginEnd="8dp"/>
+
+        <Button
+            android:id="@+id/btnStop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/stop"/>
+    </LinearLayout>
 
 </LinearLayout>
