@@ -1,8 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Recording -->
     <string name="volume_db">Volume: %.2f dB</string>
     <string name="audio_init_failed">AudioRecord init failed!</string>
     <string name="audio_permission_denied">Microphone permission denied!</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
+
+    <!-- Media player controls -->
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="stop_playback">Stop</string>
+    <string name="prev">Prev</string>
+    <string name="next">Next</string>
+
+    <!-- SeekBar time labels -->
+    <string name="current_time">0:00</string>
+    <string name="total_time">0:00</string>
+
+    <!-- File picker -->
+    <string name="choose_file">Choose File</string>
 </resources>
