@@ -15,9 +15,15 @@
     <string name="next">Next</string>
 
     <!-- SeekBar time labels -->
-    <string name="current_time">0:00</string>
-    <string name="total_time">0:00</string>
+    <string name="current_time">%1$d:%2$02d</string>
+    <string name="total_time">%1$d:%2$02d</string>
 
     <!-- File picker -->
-    <string name="choose_file">Choose File</string>
+    <string name="choose_file">Choose an Audio File</string>
+
+    <!-- Toasts and messages -->
+    <string name="no_audio_files">No audio files found</string>
+    <string name="added_file">Added %1$s</string>
+    <string name="failed_add_file">Failed to add %1$s</string>
+    <string name="permission_error">Permission error: %1$s</string>
 </resources>

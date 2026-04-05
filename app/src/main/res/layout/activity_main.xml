@@ -69,13 +69,6 @@
             android:layout_weight="1"/>
 
         <Button
-            android:id="@+id/btnPause"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/pause"
-            android:layout_weight="1"/>
-
-        <Button
             android:id="@+id/btnStop"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
