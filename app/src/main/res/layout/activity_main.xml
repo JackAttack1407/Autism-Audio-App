@@ -6,37 +6,63 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- ============================= -->
     <!-- Recording Section -->
+    <!-- ============================= -->
+
     <TextView
         android:id="@+id/meterText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
+        android:importantForAccessibility="yes"
         android:text="@string/volume_db"
-        android:textSize="18sp"
-        android:gravity="center"/>
+        android:textSize="18sp" />
 
     <com.example.autismaudioapp.AudioLevelView
         android:id="@+id/levelView"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="8dp"
-        android:background="#DDD"/>
+        android:background="#DDD" />
 
-    <Button
-        android:id="@+id/btnToggle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/start"
-        android:layout_gravity="center"
-        android:layout_marginTop="8dp"/>
-
-    <!-- Playlist Section -->
-
-    <!-- Media Player Controls -->
+    <!-- ============================= -->
+    <!-- Start + Config Row -->
+    <!-- ============================= -->
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="68dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <!-- Mic toggle -->
+        <Button
+            android:id="@+id/btnToggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:contentDescription="Start or stop microphone monitoring"
+            android:text="@string/start" />
+
+        <!-- CONFIG BUTTON (important for SharedPreferences settings) -->
+        <Button
+            android:id="@+id/btnConfig"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Open configuration settings"
+            android:text="⚙ Config" />
+    </LinearLayout>
+
+    <!-- ============================= -->
+    <!-- File Controls -->
+    <!-- ============================= -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -44,89 +70,98 @@
             android:id="@+id/btnChoose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
             android:text="@string/choose_file" />
 
         <Button
             android:id="@+id/btnRemove"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_margin="5dp"
-            android:text="Remove File" />
+            android:text="@string/remove_file" />
     </LinearLayout>
+
+    <!-- ============================= -->
+    <!-- Playlist -->
+    <!-- ============================= -->
 
     <ListView
         android:id="@+id/playlistView"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:dividerHeight="1dp" />
+
+    <!-- ============================= -->
+    <!-- Media Player Controls -->
+    <!-- ============================= -->
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
         android:layout_marginTop="16dp"
-        android:weightSum="5">
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:weightSum="4">
 
         <Button
             android:id="@+id/btnPrev"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/prev"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:text="@string/prev" />
 
         <Button
             android:id="@+id/btnPlay"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/play"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:text="@string/play" />
 
         <Button
             android:id="@+id/btnStop"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/stop_playback"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:text="@string/stop_playback" />
 
         <Button
             android:id="@+id/btnNext"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/next"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:text="@string/next" />
     </LinearLayout>
 
-    <!-- Seek Bar and Time Labels -->
+    <!-- ============================= -->
+    <!-- Seek Bar + Time -->
+    <!-- ============================= -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_marginTop="12dp"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/tvCurrentTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/current_time"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="8dp"
+            android:text="@string/current_time" />
 
         <SeekBar
             android:id="@+id/songSeekBar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
 
         <TextView
             android:id="@+id/tvTotalTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/total_time"
-            android:layout_marginStart="8dp"/>
+            android:layout_marginStart="8dp"
+            android:text="@string/total_time" />
     </LinearLayout>
 
 </LinearLayout>
