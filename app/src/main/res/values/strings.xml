@@ -13,6 +13,7 @@
     <string name="stop_playback">Stop</string>
     <string name="prev">Prev</string>
     <string name="next">Next</string>
+    <string name="remove_file">Remove File</string>
 
     <!-- SeekBar time labels -->
     <string name="current_time">%1$d:%2$02d</string>
@@ -26,4 +27,5 @@
     <string name="added_file">Added %1$s</string>
     <string name="failed_add_file">Failed to add %1$s</string>
     <string name="permission_error">Permission error: %1$s</string>
+
 </resources>

@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.provider.OpenableColumns
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import kotlin.math.log10
@@ -91,7 +92,17 @@ class MainActivity : AppCompatActivity() {
         btnNext.setOnClickListener { nextTrack() }
         btnPrev.setOnClickListener { prevTrack() }
         btnChoose.setOnClickListener { pickAudio.launch("audio/*") }
-        btnRemove.setOnClickListener { removeTrack() }
+        btnRemove.setOnClickListener {
+            if (playlist.isNotEmpty()){
+                AlertDialog.Builder(this)
+                    .setTitle("Remove Track")
+                    .setMessage("Are you sure you want to remove " + playlist[currentIndex].name + "?")
+                    .setPositiveButton("Confirm") { _, _ -> removeTrack() }
+                    .setNegativeButton("Dismiss", null)
+                    .show()
+            }
+        }
+
 
         playlistView.setOnItemClickListener { _, _, position, _ ->
             currentIndex = position
@@ -106,8 +117,8 @@ class MainActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
     }
+
     private fun removeTrack() {
-        // add pop up asking if want to delete
         if (playlist.isEmpty()) return
 
         mediaPlayer?.stop()
@@ -120,6 +131,7 @@ class MainActivity : AppCompatActivity() {
 
         loadPlaylist()
     }
+
     private fun togglePlayPause() {
         if (playlist.isEmpty()) {
             Toast.makeText(this, getString(R.string.no_audio_files), Toast.LENGTH_SHORT).show()
