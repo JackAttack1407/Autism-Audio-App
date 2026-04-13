@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnPrev: Button
     private lateinit var btnNext: Button
     private lateinit var btnChoose: Button
+    private lateinit var btnRemove: Button
     private lateinit var playlistView: ListView
 
     private lateinit var songSeekBar: SeekBar
@@ -59,6 +60,7 @@ class MainActivity : AppCompatActivity() {
         btnPrev = findViewById(R.id.btnPrev)
         btnNext = findViewById(R.id.btnNext)
         btnChoose = findViewById(R.id.btnChoose)
+        btnRemove = findViewById(R.id.btnRemove)
         playlistView = findViewById(R.id.playlistView)
 
         songSeekBar = findViewById(R.id.songSeekBar)
@@ -89,6 +91,7 @@ class MainActivity : AppCompatActivity() {
         btnNext.setOnClickListener { nextTrack() }
         btnPrev.setOnClickListener { prevTrack() }
         btnChoose.setOnClickListener { pickAudio.launch("audio/*") }
+        btnRemove.setOnClickListener { removeTrack() }
 
         playlistView.setOnItemClickListener { _, _, position, _ ->
             currentIndex = position
@@ -103,7 +106,20 @@ class MainActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
     }
+    private fun removeTrack() {
+        // add pop up asking if want to delete
+        if (playlist.isEmpty()) return
 
+        mediaPlayer?.stop()
+        mediaPlayer?.release()
+        mediaPlayer = null
+
+        val fileToDelete = playlist.removeAt(currentIndex)
+
+        fileToDelete.delete()
+
+        loadPlaylist()
+    }
     private fun togglePlayPause() {
         if (playlist.isEmpty()) {
             Toast.makeText(this, getString(R.string.no_audio_files), Toast.LENGTH_SHORT).show()
