@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--white text is what goes ON the buttons -->
+
 <resources>
     <!-- Recording -->
     <string name="volume_db">Volume: %.2f dB</string>
@@ -13,7 +15,7 @@
     <string name="stop_playback">Stop</string>
     <string name="prev">Prev</string>
     <string name="next">Next</string>
-    <string name="remove_file">Remove File</string>
+    <string name="remove_file">Remove Top File</string>
 
     <!-- SeekBar time labels -->
     <string name="current_time">%1$d:%2$02d</string>
