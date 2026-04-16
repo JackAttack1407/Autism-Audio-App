@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- for night mode on phone -->
+<resources>
+
+    <style name="Theme.AutismAudioApp"
+        parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- other customisation goes here, like colors -->
+    </style>
+
+</resources>
