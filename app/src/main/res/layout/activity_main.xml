@@ -1,73 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- layout validation "errors" are just reccomendations for ux -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/bg_soft">
 
-    <!-- ============================= -->
-    <!-- Recording Section -->
-    <!-- ============================= -->
-
-    <TextView
-        android:id="@+id/meterText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:importantForAccessibility="yes"
-        android:text="@string/volume_db"
-        android:textSize="18sp" />
-
-    <com.example.autismaudioapp.AudioLevelView
-        android:id="@+id/levelView"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="8dp"
-        android:background="#DDD" />
-
-    <!-- ============================= -->
-    <!-- Start + Config Row -->
-    <!-- ============================= -->
-
+    <!-- Top buttons (CARD) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:padding="12dp"
+        android:background="@drawable/rounded_card"
         android:gravity="center"
         android:orientation="horizontal">
 
-        <!-- Mic toggle -->
         <Button
             android:id="@+id/btnToggle"
+            style="@style/BubbleButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
-            android:contentDescription="Start or stop microphone monitoring"
-            android:text="@string/start" />
+            android:text="@string/start"/>
 
-        <!-- CONFIG BUTTON (important for SharedPreferences settings) -->
         <Button
             android:id="@+id/btnConfig"
+            style="@style/BubbleButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="Open configuration settings"
-            android:text="⚙ Config" />
+            android:text="@string/config_button"/>
     </LinearLayout>
 
-    <!-- ============================= -->
-    <!-- File Controls -->
-    <!-- ============================= -->
+    <!-- Meter (CARD) -->
+    <TextView
+        android:id="@+id/meterText"
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        android:layout_marginTop="12dp"
+        android:padding="12dp"
+        android:background="@drawable/rounded_card"
+        android:gravity="center"
+        android:text="@string/audio_start"
+        android:textSize="18sp" />
 
+    <!-- Audio level (CARD) -->
+    <com.example.autismaudioapp.AudioLevelView
+        android:id="@+id/levelView"
+        android:layout_width="match_parent"
+        android:layout_height="115dp"
+        android:layout_marginTop="12dp"
+        android:padding="12dp"
+        android:background="@drawable/rounded_card" />
+
+    <!-- File buttons (CARD) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:padding="12dp"
+        android:background="@drawable/rounded_card"
         android:gravity="center"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/btnChoose"
+            style="@style/BubbleButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -75,71 +75,65 @@
 
         <Button
             android:id="@+id/btnRemove"
+            style="@style/BubbleButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/remove_file" />
     </LinearLayout>
 
-    <!-- ============================= -->
-    <!-- Playlist -->
-    <!-- ============================= -->
-
+    <!-- Playlist (CARD) -->
     <ListView
         android:id="@+id/playlistView"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:layout_marginTop="8dp"
-        android:dividerHeight="1dp" />
+        android:layout_height="276dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/rounded_card"
+        android:dividerHeight="1dp"
+        android:padding="8dp" />
 
-    <!-- ============================= -->
-    <!-- Media Player Controls -->
-    <!-- ============================= -->
-
+    <!-- Playback (CARD) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:padding="12dp"
+        android:background="@drawable/rounded_card"
         android:gravity="center"
-        android:orientation="horizontal"
-        android:weightSum="4">
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/btnPrev"
+            style="@style/BubbleButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_height="wrap_content"
             android:text="@string/prev" />
 
         <Button
             android:id="@+id/btnPlay"
+            style="@style/BubbleButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_height="wrap_content"
             android:text="@string/play" />
 
-        <Button
-            android:id="@+id/btnStop"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/stop_playback" />
 
         <Button
             android:id="@+id/btnNext"
+            style="@style/BubbleButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_height="wrap_content"
             android:text="@string/next" />
     </LinearLayout>
 
-    <!-- ============================= -->
-    <!-- Seek Bar + Time -->
-    <!-- ============================= -->
-
+    <!-- Seek (CARD) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
+        android:padding="12dp"
+        android:background="@drawable/rounded_card"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 

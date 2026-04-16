@@ -1,33 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--white text is what goes ON the buttons -->
 
 <resources>
-    <!-- Recording -->
+
+    <!-- Recording / audio monitoring -->
+    <string name="audio_start">Press start to begin ambient volume check</string>
     <string name="volume_db">Volume: %.2f dB</string>
+    <string name="volume_db_value">dB: %1$.1f</string>
     <string name="audio_init_failed">AudioRecord init failed!</string>
     <string name="audio_permission_denied">Microphone permission denied!</string>
+    <string name="mic_denied">Microphone permission denied</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
 
-    <!-- Media player controls -->
+    <!-- Media controls -->
     <string name="play">Play</string>
     <string name="pause">Pause</string>
-    <string name="stop_playback">Stop</string>
     <string name="prev">Prev</string>
     <string name="next">Next</string>
-    <string name="remove_file">Remove Top File</string>
+    <string name="remove_file">Remove audio</string>
 
-    <!-- SeekBar time labels -->
+    <!-- Remove dialog -->
+    <string name="remove_title">Remove Track</string>
+    <string name="remove_message">Remove %1$s?</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Seek bar time format -->
     <string name="current_time">%1$d:%2$02d</string>
     <string name="total_time">%1$d:%2$02d</string>
 
     <!-- File picker -->
-    <string name="choose_file">Choose an Audio File</string>
+    <string name="choose_file">Add Audio File</string>
 
-    <!-- Toasts and messages -->
+    <!-- Toast messages -->
     <string name="no_audio_files">No audio files found</string>
     <string name="added_file">Added %1$s</string>
     <string name="failed_add_file">Failed to add %1$s</string>
     <string name="permission_error">Permission error: %1$s</string>
+
+    <!-- Settings dialog -->
+    <string name="config_button">⚙ configure ⚙</string>
+    <string name="set_threshold">Sounds at or above 85 decibels (dB) are usually considered too loud</string>
+    <string name="save">Save</string>
+    <string name="threshold_set">Threshold set to %1$.1f dB</string>
+
+    <!-- Warning popup -->
+    <string name="warning_title">⚠ Noise Warning</string>
+    <string name="warning_message">Sound exceeded %1$.0f dB</string>
+    <string name="ok">OK</string>
 
 </resources>
