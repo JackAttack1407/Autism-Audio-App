@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import kotlin.math.log10
 import kotlin.math.sqrt
 import java.io.File
@@ -153,9 +154,25 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // tap playlist item to play
+        // tap playlist item to play & show currently selected
         playlistView.setOnItemClickListener { _, _, position, _ ->
+            val previous = currentIndex
             currentIndex = position
+
+            // get position of currently selected
+            val firstVisible = playlistView.firstVisiblePosition
+            val childIndex = position - firstVisible
+            val clickedView = playlistView.getChildAt(childIndex)
+
+            // Darken background of currently selected
+            clickedView?.setBackgroundColor(ContextCompat.getColor(this, androidx.cardview.R.color.cardview_shadow_start_color))
+
+            // Reset background to unselected when new item selected
+            if (previous >= 0 && previous != currentIndex) {
+                val prevChild = playlistView.getChildAt(previous - firstVisible)
+                prevChild?.setBackgroundColor(ContextCompat.getColor(this, R.color.card_white))
+            }
+
             playCurrent()
         }
     }
