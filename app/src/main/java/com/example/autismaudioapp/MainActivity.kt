@@ -165,7 +165,7 @@ class MainActivity : AppCompatActivity() {
             val clickedView = playlistView.getChildAt(childIndex)
 
             // Darken background of currently selected
-            clickedView?.setBackgroundColor(ContextCompat.getColor(this, androidx.cardview.R.color.cardview_shadow_start_color))
+            clickedView?.setBackgroundColor(ContextCompat.getColor(this, R.color.selected_color))
 
             // Reset background to unselected when new item selected
             if (previous >= 0 && previous != currentIndex) {
