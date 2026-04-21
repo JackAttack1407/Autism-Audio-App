@@ -28,6 +28,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var toggleButton: Button
     private lateinit var btnConfig: Button
 
+    // Settings controls
+    private lateinit var switchSafeToggle: Switch
+    private lateinit var safeList: ListView
+    private lateinit var btnSensitivity: Button
+    private lateinit var btnSafe: Button
+    private lateinit var btnBack: Button
+    private lateinit var btnTest: Button
+    private lateinit var safeText: TextView
+
     // playback controls
     private lateinit var btnPlay: Button
     private lateinit var btnPrev: Button
@@ -35,6 +44,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnChoose: Button
     private lateinit var btnRemove: Button
     private lateinit var playlistView: ListView
+    private var boolSafe = false
 
     // seek bar UI
     private lateinit var songSeekBar: SeekBar
@@ -50,6 +60,7 @@ class MainActivity : AppCompatActivity() {
     private var mediaPlayer: MediaPlayer? = null
     private val playlist = mutableListOf<File>()
     private var currentIndex = 0
+    private var safeIndex = 0
 
     // warning system (prevents repeated popups)
     private var warningShown = false
@@ -90,12 +101,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // bind UI elements
+        // bind UI elements - Made into a function for layout navigation
+        bindUI()
+    }
+
+    private fun bindUI(){
         meterText = findViewById(R.id.meterText)
         levelView = findViewById(R.id.levelView)
         toggleButton = findViewById(R.id.btnToggle)
 
         btnConfig = findViewById(R.id.btnConfig)
+
+        btnTest = findViewById(R.id.test_button)
 
         btnPlay = findViewById(R.id.btnPlay)
         btnPrev = findViewById(R.id.btnPrev)
@@ -131,6 +148,8 @@ class MainActivity : AppCompatActivity() {
 
         // open settings dialog
         btnConfig.setOnClickListener { showConfigDialog() }
+        btnTest.setOnClickListener {openSettings()}
+
 
         // load saved audio files into list
         loadPlaylist()
@@ -176,7 +195,47 @@ class MainActivity : AppCompatActivity() {
             playCurrent()
         }
     }
+    private fun openSettings(){
+        setContentView(R.layout.calibration_page)
+        safeText = findViewById(R.id.safeText)
+        safeText.text = getString(R.string.safe_text, playlist[safeIndex].name)
 
+        btnSensitivity = findViewById(R.id.btnSensitivity)
+        btnSensitivity.setOnClickListener {showConfigDialog()}
+
+        // Show playlist
+        btnSafe = findViewById(R.id.btnSafe)
+        btnSafe.setOnClickListener { loadSafePlaylist() }
+
+        // When item selected, hide list and give user confirmation
+        safeList = findViewById(R.id.safeList)
+        safeList.setOnItemClickListener { _, _, position, _ ->
+            safeIndex = position
+            safeText.text = getString(R.string.safe_text, playlist[safeIndex].name)
+            safeList.visibility = android.view.View.INVISIBLE
+        }
+
+        switchSafeToggle = findViewById(R.id.switchSafeToggle)
+        switchSafeToggle.isChecked = boolSafe
+        switchSafeToggle.setOnCheckedChangeListener { _, isChecked ->
+            boolSafe = if (isChecked) {
+                // change bool to true
+                true
+            } else {
+                // change bool to false
+                false
+            }
+        }
+
+        btnBack = findViewById(R.id.btnBack)
+        btnBack.setOnClickListener {closeSettings()}
+    }
+    private fun closeSettings(){
+        // Swap back to main layout
+        setContentView(R.layout.activity_main)
+        // re-bind UI
+        bindUI()
+    }
     // show threshold config popup
     private fun showConfigDialog() {
         val input = EditText(this)
@@ -265,7 +324,7 @@ class MainActivity : AppCompatActivity() {
 
                     val normalized = (db / 120.0).toFloat().coerceIn(0f, 1f)
 
-// 🚨 noise gate (key fix)
+                    // 🚨 noise gate (key fix)
                     val isSilent = db < 2.0  // tweak 1–5 depending on mic noise
 
                     val time = System.currentTimeMillis() / 220.0
@@ -301,6 +360,15 @@ class MainActivity : AppCompatActivity() {
                     ) {
                         warningShown = true
                         lastWarningTime = now
+
+                        /*if(boolSafe && mediaPlayer == null)
+                        {
+                            // play safe audio
+                        }
+                        else
+                        {
+
+                        }*/
 
                         AlertDialog.Builder(this)
                             .setTitle(getString(R.string.warning_title))
@@ -390,6 +458,18 @@ class MainActivity : AppCompatActivity() {
         playlist.addAll(folder.listFiles()?.toList() ?: emptyList())
 
         playlistView.adapter =
+            ArrayAdapter(this, android.R.layout.simple_list_item_1, playlist.map { it.name })
+    }
+    private fun loadSafePlaylist() {
+        safeList.visibility = android.view.View.VISIBLE
+
+        val folder = File(filesDir, "audio")
+        if (!folder.exists()) folder.mkdirs()
+
+        playlist.clear()
+        playlist.addAll(folder.listFiles()?.toList() ?: emptyList())
+
+        safeList.adapter =
             ArrayAdapter(this, android.R.layout.simple_list_item_1, playlist.map { it.name })
     }
 
