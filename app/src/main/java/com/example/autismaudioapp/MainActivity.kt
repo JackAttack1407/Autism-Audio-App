@@ -357,7 +357,7 @@ class MainActivity : AppCompatActivity() {
                         warningShown = true
                         lastWarningTime = now
 
-                        if(boolSafe && mediaPlayer == null)
+                        if(boolSafe && (mediaPlayer?.isPlaying == false || mediaPlayer == null))
                         {
                             // play safe audio
                             if (!playlist.isEmpty()){
