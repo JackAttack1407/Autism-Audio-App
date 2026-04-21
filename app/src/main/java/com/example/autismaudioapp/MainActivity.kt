@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnSensitivity: Button
     private lateinit var btnSafe: Button
     private lateinit var btnBack: Button
-    private lateinit var btnTest: Button
     private lateinit var safeText: TextView
 
     // playback controls
@@ -112,8 +111,6 @@ class MainActivity : AppCompatActivity() {
 
         btnConfig = findViewById(R.id.btnConfig)
 
-        btnTest = findViewById(R.id.test_button)
-
         btnPlay = findViewById(R.id.btnPlay)
         btnPrev = findViewById(R.id.btnPrev)
         btnNext = findViewById(R.id.btnNext)
@@ -146,10 +143,9 @@ class MainActivity : AppCompatActivity() {
             if (isRecording) stopAudio() else startAudio()
         }
 
-        // open settings dialog
-        btnConfig.setOnClickListener { showConfigDialog() }
-        btnTest.setOnClickListener {openSettings()}
-
+        // SHOULD HAVE - mini pop up saying "Cannot configure while listening"
+        // open settings, if not currently recording
+        btnConfig.setOnClickListener { if(!isRecording) {openSettings()} }
 
         // load saved audio files into list
         loadPlaylist()
@@ -361,24 +357,42 @@ class MainActivity : AppCompatActivity() {
                         warningShown = true
                         lastWarningTime = now
 
-                        /*if(boolSafe && mediaPlayer == null)
+                        if(boolSafe && mediaPlayer == null)
                         {
                             // play safe audio
+                            if (!playlist.isEmpty()){
+                                mediaPlayer?.release()
+
+                                mediaPlayer = MediaPlayer().apply {
+                                    setDataSource(playlist[safeIndex].absolutePath)
+                                    prepare()
+                                    start()
+                                }
+                            }
+
+                            AlertDialog.Builder(this)
+                                .setTitle(getString(R.string.warning_title))
+                                .setMessage("Your safe sound is now playing.")
+                                .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
+                                    dialog.dismiss()
+                                    warningShown = false
+                                }
+                                .setCancelable(false)
+                                .show()
                         }
                         else
                         {
-
-                        }*/
-
-                        AlertDialog.Builder(this)
-                            .setTitle(getString(R.string.warning_title))
-                            .setMessage(getString(R.string.warning_message, threshold))
-                            .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
-                                dialog.dismiss()
-                                warningShown = false
-                            }
-                            .setCancelable(false)
-                            .show()
+                            // Dialog reappears too quick and ngl is very stressful
+                            AlertDialog.Builder(this)
+                                .setTitle(getString(R.string.warning_title))
+                                .setMessage(getString(R.string.warning_message, threshold))
+                                .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
+                                    dialog.dismiss()
+                                    warningShown = false
+                                }
+                                .setCancelable(false)
+                                .show()
+                        }
                     }
 
                     if (db <= threshold) warningShown = false

@@ -39,6 +39,8 @@
                 android:id="@+id/switchSafeToggle"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:scaleX="1.5"
+                android:scaleY="1.5"
                 android:text="Safe Sound Active?" />
 
             <Space
