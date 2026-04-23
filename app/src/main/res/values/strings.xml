@@ -25,6 +25,9 @@
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
 
+    <!-- Safe selection dialog -->
+    <string name="safe_text">Selected: %1$s</string>
+
     <!-- Seek bar time format -->
     <string name="current_time">%1$d:%2$02d</string>
     <string name="total_time">%1$d:%2$02d</string>

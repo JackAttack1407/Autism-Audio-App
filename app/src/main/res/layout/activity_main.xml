@@ -4,19 +4,20 @@
     android:id="@+id/mainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bg_soft"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@color/bg_soft">
+    android:padding="16dp">
 
     <!-- Top buttons (CARD) -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:padding="12dp"
         android:background="@drawable/rounded_card"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="12dp">
 
         <Button
             android:id="@+id/btnToggle"
@@ -24,14 +25,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
-            android:text="@string/start"/>
+            android:text="@string/start" />
 
         <Button
             android:id="@+id/btnConfig"
             style="@style/BubbleButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/config_button"/>
+            android:text="@string/config_button" />
+
     </LinearLayout>
 
     <!-- Meter (CARD) -->
@@ -40,9 +42,9 @@
         android:layout_width="match_parent"
         android:layout_height="96dp"
         android:layout_marginTop="12dp"
-        android:padding="12dp"
         android:background="@drawable/rounded_card"
         android:gravity="center"
+        android:padding="12dp"
         android:text="@string/audio_start"
         android:textSize="18sp" />
 
@@ -52,18 +54,18 @@
         android:layout_width="match_parent"
         android:layout_height="115dp"
         android:layout_marginTop="12dp"
-        android:padding="12dp"
-        android:background="@drawable/rounded_card" />
+        android:background="@drawable/rounded_card"
+        android:padding="12dp" />
 
     <!-- File buttons (CARD) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:padding="12dp"
         android:background="@drawable/rounded_card"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="12dp">
 
         <Button
             android:id="@+id/btnChoose"
@@ -85,7 +87,7 @@
     <ListView
         android:id="@+id/playlistView"
         android:layout_width="match_parent"
-        android:layout_height="276dp"
+        android:layout_height="166dp"
         android:layout_marginTop="12dp"
         android:background="@drawable/rounded_card"
         android:dividerHeight="1dp"
@@ -96,25 +98,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:padding="12dp"
         android:background="@drawable/rounded_card"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="12dp">
 
         <Button
             android:id="@+id/btnPrev"
             style="@style/BubbleButton"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/prev" />
 
         <Button
             android:id="@+id/btnPlay"
             style="@style/BubbleButton"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/play" />
 
 
@@ -122,20 +124,19 @@
             android:id="@+id/btnNext"
             style="@style/BubbleButton"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/next" />
     </LinearLayout>
 
-    <!-- Seek (CARD) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:padding="12dp"
         android:background="@drawable/rounded_card"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="12dp">
 
         <TextView
             android:id="@+id/tvCurrentTime"
@@ -156,6 +157,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="@string/total_time" />
+
     </LinearLayout>
+
+    <!-- Seek (CARD) -->
 
 </LinearLayout>

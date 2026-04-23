@@ -28,6 +28,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var toggleButton: Button
     private lateinit var btnConfig: Button
 
+    //Settings controls
+    private lateinit var switchSafeToggle: Switch
+    private lateinit var safeList: ListView
+    private lateinit var btnSensitivity: Button
+    private lateinit var btnSafe: Button
+    private lateinit var btnBack: Button
+    private lateinit var safeText: TextView
+
     // playback controls
     private lateinit var btnPlay: Button
     private lateinit var btnPrev: Button
@@ -35,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnChoose: Button
     private lateinit var btnRemove: Button
     private lateinit var playlistView: ListView
+    private var boolSafe = false
 
     // seek bar UI
     private lateinit var songSeekBar: SeekBar
@@ -50,6 +59,7 @@ class MainActivity : AppCompatActivity() {
     private var mediaPlayer: MediaPlayer? = null
     private val playlist = mutableListOf<File>()
     private var currentIndex = 0
+    private var safeIndex = 0
 
     // warning system (prevents repeated popups)
     private var warningShown = false
@@ -68,8 +78,23 @@ class MainActivity : AppCompatActivity() {
         getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
 
     // read saved noise threshold
-    private fun getDbThreshold(): Float =
-        getPrefs().getFloat(KEY_DB_THRESHOLD, DEFAULT_DB_THRESHOLD)
+    private fun getDbThreshold(): Float {
+        val prefs = getPrefs()
+
+        val exists = prefs.contains(KEY_DB_THRESHOLD)
+
+        // If config doesn't exist yet, create it
+        if (!exists) {
+            prefs.edit()
+                .putFloat(KEY_DB_THRESHOLD, DEFAULT_DB_THRESHOLD)
+                .apply()
+            //Use the KTX extension function SharedPreferences.edit instead?
+            // requires a newer kotlin version, which cannot currently be used (14/04/2026)
+
+        }
+
+        return prefs.getFloat(KEY_DB_THRESHOLD, DEFAULT_DB_THRESHOLD)
+    }
 
     // save noise threshold
     private fun setDbThreshold(value: Float) {
@@ -90,7 +115,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // bind UI elements
+        // bind UI elements - Made into a function for layout navigation
+        bindUI()
+    }
+
+    private fun bindUI() {
         meterText = findViewById(R.id.meterText)
         levelView = findViewById(R.id.levelView)
         toggleButton = findViewById(R.id.btnToggle)
@@ -129,8 +158,13 @@ class MainActivity : AppCompatActivity() {
             if (isRecording) stopAudio() else startAudio()
         }
 
-        // open settings dialog
-        btnConfig.setOnClickListener { showConfigDialog() }
+        // SHOULD HAVE - mini pop up saying "Cannot configure while listening"
+        // open settings, if not currently recording
+        btnConfig.setOnClickListener {
+            if (!isRecording) {
+                openSettings()
+            }
+        }
 
         // load saved audio files into list
         loadPlaylist()
@@ -175,6 +209,70 @@ class MainActivity : AppCompatActivity() {
 
             playCurrent()
         }
+    }
+
+    private fun openSettings() {
+        val prefs = getPrefs()
+
+        if (playlist.isEmpty()) {
+            Toast.makeText(this, "No audio files available", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (safeIndex >= playlist.size) {
+            safeIndex = 0
+        }
+
+        if (!prefs.contains(KEY_DB_THRESHOLD)) {
+            prefs.edit()
+                //Use the KTX extension function SharedPreferences.edit instead?
+                // requires a newer kotlin version, which cannot currently be used (14/04/2026)
+                .putFloat(KEY_DB_THRESHOLD, DEFAULT_DB_THRESHOLD)
+                .apply()
+
+            Toast.makeText(this, "Default config created", Toast.LENGTH_SHORT).show()
+        }
+
+        setContentView(R.layout.calibration_page)
+        safeText = findViewById(R.id.safeText)
+        safeText.text = getString(R.string.safe_text, playlist[safeIndex].name)
+
+        btnSensitivity = findViewById(R.id.btnSensitivity)
+        btnSensitivity.setOnClickListener { showConfigDialog() }
+
+        // Show playlist
+        btnSafe = findViewById(R.id.btnSafe)
+        btnSafe.setOnClickListener { loadSafePlaylist() }
+
+        // When item selected, hide list and give user confirmation
+        safeList = findViewById(R.id.safeList)
+        safeList.setOnItemClickListener { _, _, position, _ ->
+            safeIndex = position
+            safeText.text = getString(R.string.safe_text, playlist[safeIndex].name)
+            safeList.visibility = android.view.View.INVISIBLE
+        }
+
+        switchSafeToggle = findViewById(R.id.switchSafeToggle)
+        switchSafeToggle.isChecked = boolSafe
+        switchSafeToggle.setOnCheckedChangeListener { _, isChecked ->
+            boolSafe = if (isChecked) {
+                // change bool to true
+                true
+            } else {
+                // change bool to false
+                false
+            }
+        }
+
+        btnBack = findViewById(R.id.btnBack)
+        btnBack.setOnClickListener { closeSettings() }
+    }
+
+    private fun closeSettings() {
+        // Swap back to main layout
+        setContentView(R.layout.activity_main)
+        // re-bind UI
+        bindUI()
     }
 
     // show threshold config popup
@@ -265,7 +363,7 @@ class MainActivity : AppCompatActivity() {
 
                     val normalized = (db / 120.0).toFloat().coerceIn(0f, 1f)
 
-// 🚨 noise gate (key fix)
+                    // 🚨 noise gate (key fix)
                     val isSilent = db < 2.0  // tweak 1–5 depending on mic noise
 
                     val time = System.currentTimeMillis() / 220.0
@@ -302,15 +400,39 @@ class MainActivity : AppCompatActivity() {
                         warningShown = true
                         lastWarningTime = now
 
-                        AlertDialog.Builder(this)
-                            .setTitle(getString(R.string.warning_title))
-                            .setMessage(getString(R.string.warning_message, threshold))
-                            .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
-                                dialog.dismiss()
-                                warningShown = false
+                        if (boolSafe && (mediaPlayer?.isPlaying == false || mediaPlayer == null)) {
+                            // play safe audio
+                            if (!playlist.isEmpty()) {
+                                mediaPlayer?.release()
+
+                                mediaPlayer = MediaPlayer().apply {
+                                    setDataSource(playlist[safeIndex].absolutePath)
+                                    prepare()
+                                    start()
+                                }
                             }
-                            .setCancelable(false)
-                            .show()
+
+                            AlertDialog.Builder(this)
+                                .setTitle(getString(R.string.warning_title))
+                                .setMessage("Your safe sound is now playing.")
+                                .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
+                                    dialog.dismiss()
+                                    warningShown = false
+                                }
+                                .setCancelable(false)
+                                .show()
+                        } else {
+                            // Dialog reappears too quick and ngl is very stressful
+                            AlertDialog.Builder(this)
+                                .setTitle(getString(R.string.warning_title))
+                                .setMessage(getString(R.string.warning_message, threshold))
+                                .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
+                                    dialog.dismiss()
+                                    warningShown = false
+                                }
+                                .setCancelable(false)
+                                .show()
+                        }
                     }
 
                     if (db <= threshold) warningShown = false
@@ -320,7 +442,8 @@ class MainActivity : AppCompatActivity() {
             try {
                 recorder.stop()
                 recorder.release()
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+            }
         }
 
         audioThread?.start()
@@ -334,7 +457,8 @@ class MainActivity : AppCompatActivity() {
         try {
             audioRecord?.stop()
             audioRecord?.release()
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
 
         audioRecord = null
     }
@@ -382,19 +506,40 @@ class MainActivity : AppCompatActivity() {
     }
 
     // load saved audio files
+    // load saved audio files
     private fun loadPlaylist() {
-        val folder = File(filesDir, "audio")
-        if (!folder.exists()) folder.mkdirs()
 
         playlist.clear()
-        playlist.addAll(folder.listFiles()?.toList() ?: emptyList())
+
+        val assetManager = assets
+        val rootFolders = assetManager.list("audio") ?: return
+
+        for (folder in rootFolders) {
+
+            val files = assetManager.list("audio/$folder") ?: continue
+
+            for (file in files) {
+                if (file.endsWith(".wav")) {
+                    playlist.add(File("android_asset/audio/$folder/$file"))
+                }
+            }
+        }
 
         playlistView.adapter =
+            ArrayAdapter(this, android.R.layout.simple_list_item_1, playlist.map { it.name })
+    } // ✅ THIS BRACE WAS MISSING
+
+    // safe playlist UI
+    private fun loadSafePlaylist() {
+        safeList.visibility = android.view.View.VISIBLE
+
+        safeList.adapter =
             ArrayAdapter(this, android.R.layout.simple_list_item_1, playlist.map { it.name })
     }
 
     // save imported audio file
     private fun saveAudioFile(uri: Uri) {
+
         val folder = File(filesDir, "audio")
         if (!folder.exists()) folder.mkdirs()
 
