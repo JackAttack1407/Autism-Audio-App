@@ -5,4 +5,5 @@
     <color name="surface_soft">#F5F7F8</color>
     <color name="card_white">#FFFFFF</color>
     <color name="bg_soft">#F4F7F8</color>
+    <color name="highlight_color">#F4F7F8</color>
 </resources>

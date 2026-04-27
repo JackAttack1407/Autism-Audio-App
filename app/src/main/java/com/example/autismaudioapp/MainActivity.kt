@@ -40,6 +40,17 @@ class MainActivity : AppCompatActivity() {
     private var audioRecord: AudioRecord? = null
     @Volatile private var isRecording = false
 
+
+    // Settings controls
+    private lateinit var switchSafeToggle: Switch
+    private lateinit var safeList: ListView
+    private lateinit var btnSensitivity: Button
+    private lateinit var btnSafe: Button
+    private lateinit var btnBack: Button
+    private lateinit var safeText: TextView
+    private var boolSafe = false
+    private var playSafe = false
+
     //Playback
     private var mediaPlayer: MediaPlayer? = null
     private var isPlaying = false
@@ -58,6 +69,8 @@ class MainActivity : AppCompatActivity() {
     private val playlist = mutableListOf<Uri>()
     private val playlistNames = mutableListOf<String>()
     private var currentIndex = 0
+    private var safeIndex = 0
+    private var playIndex = 0
 
     //Prefs
     companion object {
@@ -95,6 +108,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Moved here to prevent duplication by calling bindUI()
+        playlistView = findViewById(R.id.playlistView)
+        loadAssets()
+        loadUserAudio()
+
+        bindUI()
+        requestMicPermission()
+    }
+
+    private fun bindUI() {
         meterText = findViewById(R.id.meterText)
         levelView = findViewById(R.id.levelView)
         toggleButton = findViewById(R.id.btnToggle)
@@ -111,8 +134,6 @@ class MainActivity : AppCompatActivity() {
         tvCurrentTime = findViewById(R.id.tvCurrentTime)
         tvTotalTime = findViewById(R.id.tvTotalTime)
 
-        loadAssets()
-        loadUserAudio()
         refreshList()
 
         //Start/Stop recording
@@ -125,11 +146,30 @@ class MainActivity : AppCompatActivity() {
         btnNext.setOnClickListener { nextTrack() }
         btnPrev.setOnClickListener { prevTrack() }
         btnChoose.setOnClickListener { pickAudio.launch(arrayOf("audio/*")) }
+
         btnRemove.setOnClickListener { removeSelected() }
-        btnConfig.setOnClickListener { showConfig() }
+
+        btnConfig.setOnClickListener { if(!isRecording && (mediaPlayer == null || mediaPlayer?.isPlaying == false)) {openSettings()} }
 
         playlistView.setOnItemClickListener { _, _, pos, _ ->
+            val previous = currentIndex
             currentIndex = pos
+
+            // Show Selected
+            // get position of currently selected
+            val firstVisible = playlistView.firstVisiblePosition
+            val childIndex = pos - firstVisible
+            val clickedView = playlistView.getChildAt(childIndex)
+
+            // Darken background of currently selected
+            clickedView?.setBackgroundColor(getColor(R.color.highlight_color))
+
+            // Reset background to unselected when new item selected
+            if (previous >= 0 && previous != currentIndex) {
+                val prevChild = playlistView.getChildAt(previous - firstVisible)
+                prevChild?.setBackgroundColor(getColor(R.color.card_white))
+            }
+
             playCurrent()
         }
 
@@ -148,8 +188,6 @@ class MainActivity : AppCompatActivity() {
                 isSeeking = false
             }
         })
-
-        requestMicPermission()
     }
 
     //Config
@@ -193,6 +231,56 @@ class MainActivity : AppCompatActivity() {
             ArrayAdapter(this, android.R.layout.simple_list_item_1, playlistNames)
     }
 
+    private fun refreshSafeList() {
+        safeList.visibility = android.view.View.VISIBLE
+
+        safeList.adapter =
+            ArrayAdapter(this, android.R.layout.simple_list_item_1, playlistNames)
+    }
+
+    //Settings
+    private fun openSettings(){
+        setContentView(R.layout.calibration_page)
+        safeText = findViewById(R.id.safeText)
+        safeText.text = getString(R.string.safe_text, playlist[safeIndex].toString())
+
+        btnSensitivity = findViewById(R.id.btnSensitivity)
+        btnSensitivity.setOnClickListener {showConfig()}
+
+        // Show playlist
+        btnSafe = findViewById(R.id.btnSafe)
+        btnSafe.setOnClickListener { refreshSafeList() }
+
+        // When item selected, hide list and give user confirmation
+        safeList = findViewById(R.id.safeList)
+        safeList.setOnItemClickListener { _, _, position, _ ->
+            safeIndex = position
+            safeText.text = getString(R.string.safe_text, playlist[safeIndex].toString())
+            safeList.visibility = android.view.View.INVISIBLE
+        }
+
+        switchSafeToggle = findViewById(R.id.switchSafeToggle)
+        switchSafeToggle.isChecked = boolSafe
+        switchSafeToggle.setOnCheckedChangeListener { _, isChecked ->
+            boolSafe = if (isChecked) {
+                // change bool to true
+                true
+            } else {
+                // change bool to false
+                false
+            }
+        }
+
+        btnBack = findViewById(R.id.btnBack)
+        btnBack.setOnClickListener {closeSettings()}
+    }
+    private fun closeSettings(){
+        // Swap back to main layout
+        setContentView(R.layout.activity_main)
+        // re-bind UI
+        bindUI()
+    }
+
     //Playback
     private fun playCurrent() {
         if (playlist.isEmpty()) return
@@ -200,7 +288,18 @@ class MainActivity : AppCompatActivity() {
         mediaPlayer?.release()
         mediaPlayer = null
 
-        val uri = playlist[currentIndex]
+        if (playSafe)
+        {
+            playIndex = safeIndex
+            playSafe = false
+        }
+        else
+        {
+            playIndex = currentIndex
+        }
+
+        val uri = playlist[playIndex]
+
         val mp = MediaPlayer()
 
         try {
@@ -397,23 +496,41 @@ class MainActivity : AppCompatActivity() {
         if (isPopupShowing) return
         isPopupShowing = true
 
-        AlertDialog.Builder(this)
-            .setTitle("Warning")
-            .setMessage(
-                "Warning: maybe go somewhere quieter.\n" +
-                        "It’s louder than your chosen DB value.\n\n" +
-                        "Current level: %.1f dB\nThreshold: %.1f dB"
-                            .format(db, getThreshold())
-            )
-            .setCancelable(false)
-            .setPositiveButton("OK") { d, _ ->
-                d.dismiss()
-                isPopupShowing = false
-            }
-            .setOnDismissListener {
-                isPopupShowing = false
-            }
-            .show()
+        if(boolSafe && (mediaPlayer == null || mediaPlayer?.isPlaying == false))
+        {
+            playSafe = true;
+            playCurrent()
+
+            AlertDialog.Builder(this)
+                .setTitle(getString(R.string.warning_title))
+                .setMessage("Your safe sound is now playing.")
+                .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
+                    dialog.dismiss()
+                    isPopupShowing = false
+                }
+                .setCancelable(false)
+                .show()
+        }
+        else
+        {
+            AlertDialog.Builder(this)
+                .setTitle("Warning")
+                .setMessage(
+                    "Warning: maybe go somewhere quieter.\n" +
+                            "It’s louder than your chosen DB value.\n\n" +
+                            "Current level: %.1f dB\nThreshold: %.1f dB"
+                                .format(db, getThreshold())
+                )
+                .setCancelable(false)
+                .setPositiveButton("OK") { d, _ ->
+                    d.dismiss()
+                    isPopupShowing = false
+                }
+                .setOnDismissListener {
+                    isPopupShowing = false
+                }
+                .show()
+        }
     }
 
     //Permission

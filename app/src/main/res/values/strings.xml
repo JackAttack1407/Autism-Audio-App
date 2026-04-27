@@ -49,4 +49,7 @@
     <string name="warning_message">Sound exceeded %1$.0f dB</string>
     <string name="ok">OK</string>
 
+    <!-- Safe selection dialog -->
+    <string name="safe_text">Selected: %1$s</string>
+
 </resources>
